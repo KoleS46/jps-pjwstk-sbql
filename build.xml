@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project s9067_s10091_pr7">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required --> 
+	<property name="CLASSPATH" value="bin;lib/JFlex.jar;lib/java-cup-11a.jar;"/>
+	<taskdef name="jflex" classname="JFlex.anttask.JFlexTask" classpath="${CLASSPATH}"/>
+	<taskdef name="cup" classname="java_cup.anttask.CUPTask" classpath="${CLASSPATH}"/>
+
+	<target name="clean">
+		<delete>
+			<fileset dir="src/jpslab/ast/parser" includes="*.java"/>
+			<file file="pr7.jar"/>
+		</delete>
+	</target>
+	
+	<target depends="clean" name="generate">
+		<jflex destdir="src" file="res/lex.lex" nobak="true"/>
+		<cup destdir="src" interface="true" package="jpslab.ast.parser" symbols="CupSym" parser="SbqlParser" srcfile="res/cup.cup" force="true"/>
+	</target>
+	<target depends="generate" name="-check-use-file" unless="file.exists">
+	    <available property="file.exists" file="src/jpslab/ast/parser/SbqlParser.java"/>
+	</target>
+	<target name="create_run_jar" depends="-check-use-file" if="${file.exists}">
+        <jar destfile="pr7.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="jpslab.main.MainRun"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/jps-api_1.0.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/jdom.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/java-cup-11a.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/JFlex.jar"/>
+        </jar>
+    </target>
+</project>
